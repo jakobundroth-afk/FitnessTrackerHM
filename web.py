@@ -2,6 +2,27 @@ from flask import Flask, request, redirect, render_template, url_for
 import json, os, datetime
 from app import USER_FILE, MEALS_FILE, TRAINING_FILE, FOOD_DB, load_json, save_json, parse_meal_input
 
+# Zusätzliche einfache kcal/100g Tabelle (offline, nur Python)
+KCAL_PER_100G = {
+    'apfel': 52,
+    'banane': 89,
+    'haferflocken': 379,
+    'brot': 265,
+    'ei': 155,  # als Referenz pro 100g
+    'hähnchenbrust gekocht': 165,
+    'reis gekocht': 130,
+    'nudeln gekocht': 131,
+    'quark mager': 67,
+    'joghurt natur': 60,
+}
+
+def kcal_for_grams(name: str, grams: float):
+    n = name.strip().lower()
+    if n not in KCAL_PER_100G:
+        return None
+    per100 = KCAL_PER_100G[n]
+    return round(per100 * grams / 100.0, 1)
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -48,25 +69,52 @@ def profil():
 def mahlzeit():
     msg = ''
     if request.method == 'POST':
-        text = request.form['text']
-        parsed = parse_meal_input(text)
-        if parsed:
-            meals = load_json(MEALS_FILE, [])
-            now = datetime.datetime.now().isoformat(timespec='seconds')
-            total_entry = {'time': now, 'items': [], 'totals': {'kcal':0,'protein':0,'fat':0,'carbs':0}}
-            for food, qty in parsed:
-                data = FOOD_DB.get(food)
-                if not data:
-                    continue
-                item_totals = {k: data[k]*qty for k in data}
-                total_entry['items'].append({'food':food,'qty':qty, **item_totals})
-                for k in total_entry['totals']:
-                    total_entry['totals'][k] += item_totals[k]
-            meals.append(total_entry)
-            save_json(MEALS_FILE, meals)
-            msg = f"Gespeichert: {total_entry['totals']['kcal']} kcal"
+        text = request.form.get('text','').strip()
+        dish = request.form.get('dish','').strip()
+        grams_str = request.form.get('grams','').strip()
+
+        meals = load_json(MEALS_FILE, [])
+        now = datetime.datetime.now().isoformat(timespec='seconds')
+        total_entry = {'time': now, 'items': [], 'totals': {'kcal':0,'protein':0,'fat':0,'carbs':0}}
+
+        # Modus A: Gericht + Gramm -> nur kcal Berechnung über Tabelle
+        if dish and grams_str:
+            try:
+                grams = float(grams_str)
+            except ValueError:
+                grams = None
+            if grams is None or grams <= 0:
+                msg = 'Bitte gültige Gramm-Zahl angeben.'
+            else:
+                kcal_val = kcal_for_grams(dish, grams)
+                if kcal_val is None:
+                    msg = 'Gericht nicht in Tabelle. Bitte hinzufügen oder Freitext nutzen.'
+                else:
+                    total_entry['items'].append({'food': dish.lower(), 'qty': grams, 'kcal': kcal_val})
+                    total_entry['totals']['kcal'] += kcal_val
+                    meals.append(total_entry)
+                    save_json(MEALS_FILE, meals)
+                    msg = f"Gespeichert: {kcal_val} kcal für {grams} g {dish}"
+
+        # Modus B: ursprünglicher Freitext Parser
+        elif text:
+            parsed = parse_meal_input(text)
+            if parsed:
+                for food, qty in parsed:
+                    data = FOOD_DB.get(food)
+                    if not data:
+                        continue
+                    item_totals = {k: data[k]*qty for k in data}
+                    total_entry['items'].append({'food':food,'qty':qty, **item_totals})
+                    for k in total_entry['totals']:
+                        total_entry['totals'][k] += item_totals[k]
+                meals.append(total_entry)
+                save_json(MEALS_FILE, meals)
+                msg = f"Gespeichert: {total_entry['totals']['kcal']} kcal"
+            else:
+                msg = 'Nichts erkannt.'
         else:
-            msg = 'Nichts erkannt.'
+            msg = 'Bitte Freitext oder Gericht + Gramm ausfüllen.'
     return render_template('mahlzeit.html', msg=msg)
 
 @app.route('/training', methods=['GET','POST'])
