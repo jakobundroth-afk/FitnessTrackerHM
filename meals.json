@@ -152,5 +152,63 @@
       "fat": 0,
       "carbs": 50
     }
+  },
+  {
+    "time": "2025-11-30T12:17:00",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-30T12:17:06",
+    "items": [
+      {
+        "food": "banane",
+        "qty": 5,
+        "kcal": 525,
+        "protein": 5,
+        "fat": 0,
+        "carbs": 135
+      }
+    ],
+    "totals": {
+      "kcal": 525,
+      "protein": 5,
+      "fat": 0,
+      "carbs": 135
+    }
+  },
+  {
+    "time": "2025-11-30T12:17:17",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-30T12:17:27",
+    "items": [
+      {
+        "food": "haferflocken",
+        "qty": 5,
+        "kcal": 750,
+        "protein": 25,
+        "fat": 15,
+        "carbs": 135
+      }
+    ],
+    "totals": {
+      "kcal": 750,
+      "protein": 25,
+      "fat": 15,
+      "carbs": 135
+    }
   }
 ]
