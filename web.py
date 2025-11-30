@@ -1,9 +1,25 @@
-from flask import Flask, request, redirect, render_template, url_for
+from flask import Flask, request, jsonify
 import json, os, datetime
 from app import USER_FILE, MEALS_FILE, TRAINING_FILE, FOOD_DB, load_json, save_json, parse_meal_input
 
 # Zusätzliche einfache kcal/100g Tabelle (offline, nur Python)
 KCAL_PER_100G = {
+    'apfel': 52,
+    'banane': 89,
+    'haferflocken': 379,
+    'brot': 265,
+    'ei': 155,  # als Referenz pro 100g
+    'hähnchenbrust gekocht': 165,
+    'reis gekocht': 130,
+    'nudeln gekocht': 131,
+}
+
+def kcal_for_grams(name: str, grams: float):
+    n = name.strip().lower()
+    per100 = KCAL_PER_100G.get(n)
+    if per100 is None:
+        return None
+    return round(per100 * grams / 100.0, 1)
     'apfel': 52,
     'banane': 89,
     'haferflocken': 379,
@@ -37,7 +53,12 @@ def dashboard():
     else:
         target = consumed = remaining = 0
     last_meals = meals[-5:][::-1]
-    return render_template('dashboard.html', target=target, consumed=consumed, remaining=remaining, meals=last_meals)
+    return jsonify({
+        'target': target,
+        'consumed_today': consumed,
+        'remaining': remaining,
+        'last_meals': last_meals,
+    })
 
 @app.route('/profil', methods=['GET','POST'])
 def profil():
@@ -63,7 +84,7 @@ def profil():
         save_json(USER_FILE, profile)
         return redirect(url_for('profil'))
     profile = load_json(USER_FILE, None)
-    return render_template('profil.html', profile=profile)
+    return jsonify({'profile': profile})
 
 @app.route('/mahlzeit', methods=['GET','POST'])
 def mahlzeit():
@@ -115,7 +136,7 @@ def mahlzeit():
                 msg = 'Nichts erkannt.'
         else:
             msg = 'Bitte Freitext oder Gericht + Gramm ausfüllen.'
-    return render_template('mahlzeit.html', msg=msg)
+    return jsonify({'status': 'ok', 'msg': msg})
 
 @app.route('/training', methods=['GET','POST'])
 def training():
@@ -134,20 +155,20 @@ def training():
         save_json(TRAINING_FILE, data)
         msg = 'Training gespeichert.'
     entries = load_json(TRAINING_FILE, [])[-10:][::-1]
-    return render_template('training.html', msg=msg, entries=entries)
+    return jsonify({'entries': entries})
 
 @app.route('/fortschritt')
 def fortschritt():
     data = load_json(TRAINING_FILE, [])
     if len(data) < 2:
-        return render_template('fortschritt.html', enough=False)
+        return jsonify({'enough': False})
     last7 = data[-7:]
     prev7 = data[-14:-7]
     def avg(field, entries):
         return round(sum(e[field] for e in entries)/len(entries),1) if entries else 0
     w_last = avg('weight', last7); w_prev = avg('weight', prev7)
     r_last = avg('reps', last7); r_prev = avg('reps', prev7)
-    return render_template('fortschritt.html', enough=True, w_last=w_last, w_prev=w_prev, r_last=r_last, r_prev=r_prev)
+    return jsonify({'enough': True, 'w_last': w_last, 'w_prev': w_prev, 'r_last': r_last, 'r_prev': r_prev})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', '5010'))
