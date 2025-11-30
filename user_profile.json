@@ -1,0 +1,11 @@
+{
+  "age": 20,
+  "sex": "m",
+  "height_cm": 175.0,
+  "weight_kg": 70.0,
+  "activity_factor": 1.3,
+  "goal": "zunehmen",
+  "bmr": 1698.8,
+  "tdee": 2208.4,
+  "suggested_daily_calories": 2508.4
+}

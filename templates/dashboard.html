@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Fitness Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>Benutzerprofil – Übersicht</h1>
+    {% if profile %}
+        <div class="section">
+            <h2>Stammdaten</h2>
+            <p><strong>Alter:</strong> {{ profile.age }}</p>
+            <p><strong>Geschlecht:</strong> {{ profile.sex }}</p>
+            <p><strong>Größe:</strong> {{ profile.height_cm }} cm</p>
+            <p><strong>Gewicht:</strong> {{ profile.weight_kg }} kg</p>
+            <p><strong>Ziel:</strong> {{ profile.goal }}</p>
+            <p><strong>Aktivitätsfaktor:</strong> {{ profile.activity_factor }}</p>
+        </div>
+        <div class="section">
+            <h2>Berechnete Werte</h2>
+            <p><strong>BMR:</strong> {{ profile.bmr }} kcal/Tag</p>
+            <p><strong>TDEE:</strong> {{ profile.tdee }} kcal/Tag</p>
+            <p><strong>Empf. Ziel-Kalorien:</strong> {{ profile.suggested_daily_calories }} kcal/Tag</p>
+        </div>
+    {% else %}
+        <div class="section">
+            <p><strong>Kein Profil vorhanden.</strong></p>
+        </div>
+    {% endif %}
+
+    <div class="section">
+        <h2>Profil anlegen / aktualisieren</h2>
+        <!-- Einfaches HTML-Formular ohne JavaScript -->
+        <form method="post" action="{{ url_for('profil') }}">
+            <label>Alter:<br><input type="number" name="age" required></label><br><br>
+            <label>Geschlecht (m/f):<br><input type="text" name="sex" required></label><br><br>
+            <label>Größe (cm):<br><input type="number" step="0.1" name="height_cm" required></label><br><br>
+            <label>Gewicht (kg):<br><input type="number" step="0.1" name="weight_kg" required></label><br><br>
+            <label>Aktivitätsfaktor (z.B. 1.2 - 1.725):<br><input type="number" step="0.01" name="activity_factor" required></label><br><br>
+            <label>Ziel (halten / zunehmen / abnehmen):<br><input type="text" name="goal" required></label><br><br>
+            <button type="submit">Speichern</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Training hinzufügen</h2>
+        <form method="post" action="{{ url_for('training') }}">
+            <label>Übung:<br><input type="text" name="exercise" required></label><br><br>
+            <label>Gewicht (kg):<br><input type="number" step="0.1" name="weight" required></label><br><br>
+            <label>Wiederholungen:<br><input type="number" name="reps" required></label><br><br>
+            <label>Sätze:<br><input type="number" name="sets" required></label><br><br>
+            <button type="submit">Eintrag speichern</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Letzte Trainings-Einträge</h2>
+        {% if entries and entries|length > 0 %}
+            <ul>
+            {% for e in entries[-10:]|reverse %}
+                <li>{{ e.date }} – {{ e.exercise }}: {{ e.weight }} kg x {{ e.reps }} ({{ e.sets }} Sätze)</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Noch keine Einträge.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Fortschritt (Durchschnitt letzte 7 vs vorherige 7)</h2>
+        {% if progress.enough %}
+            <p><strong>Ø Gewicht letzte 7:</strong> {{ progress.avg_weight_last }} kg (vorher: {{ progress.avg_weight_prev }} kg)</p>
+            <p><strong>Ø Wdh letzte 7:</strong> {{ progress.avg_reps_last }} (vorher: {{ progress.avg_reps_prev }})</p>
+        {% else %}
+            <p>Noch nicht genug Einträge für Vergleich.</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>Sehr einfaches Studien-Dashboard – nur HTML & minimal CSS.</p>
+    </div>
+</div>
+</body>
+</html>
