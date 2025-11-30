@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<section>
+<h2>Heute</h2>
+<p><strong>Ziel:</strong> {{ target }} kcal<br>
+<strong>Konsumiert:</strong> {{ consumed }} kcal<br>
+<strong>Verbleibend:</strong> {{ remaining }} kcal</p>
+</section>
+<section>
+<h3>Letzte Mahlzeiten</h3>
+{% if meals %}
+<ul>
+{% for m in meals %}
+<li>{{ m.time }}: {{ m.totals.kcal }} kcal</li>
+{% endfor %}
+</ul>
+{% else %}
+<p>Keine Einträge</p>
+{% endif %}
+</section>
+{% endblock %}

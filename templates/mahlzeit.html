@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section>
+<h2>Mahlzeit eingeben</h2>
+<form method="post">
+<textarea name="text" rows="3" placeholder="z.B. 2 eier und ein apfel"></textarea>
+<button>Speichern</button>
+</form>
+{% if msg %}<div class="alert">{{ msg }}</div>{% endif %}
+</section>
+{% endblock %}

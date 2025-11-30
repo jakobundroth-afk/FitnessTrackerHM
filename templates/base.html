@@ -1,0 +1,22 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Fitness</title>
+<style>
+body{font-family:Arial;max-width:900px;margin:20px auto;background:#f4f6f8;padding:20px;}
+header{margin-bottom:20px;}
+nav a{margin-right:10px;text-decoration:none;color:#0366d6;}
+section{background:#fff;padding:15px;margin-bottom:15px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.1);} 
+input,select,textarea{width:100%;padding:6px;margin:4px 0;border:1px solid #ccc;border-radius:4px;}
+button{padding:8px 14px;background:#0366d6;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+button:hover{background:#024e9c;}
+footer{margin-top:30px;font-size:12px;color:#666;text-align:center;}
+.alert{padding:8px 12px;background:#eaf5ff;border-left:4px solid #36c; margin-top:10px;}
+</style></head><body>
+<header><h1>Fitness Tracker</h1><nav>
+<a href="/">Dashboard</a>
+<a href="/profil">Profil</a>
+<a href="/mahlzeit">Mahlzeit</a>
+<a href="/training">Training</a>
+<a href="/fortschritt">Fortschritt</a>
+</nav></header>
+{% block content %}{% endblock %}
+<footer>Lokale Demo – Daten nur JSON Dateien.</footer>
+</body></html>

@@ -1,0 +1,156 @@
+[
+  {
+    "time": "2025-11-26T11:16:05",
+    "items": [
+      {
+        "food": "eier",
+        "qty": 3,
+        "kcal": 234,
+        "protein": 18,
+        "fat": 15,
+        "carbs": 0
+      }
+    ],
+    "totals": {
+      "kcal": 234,
+      "protein": 18,
+      "fat": 15,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:21",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:27",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:31",
+    "items": [
+      {
+        "food": "apfel",
+        "qty": 3,
+        "kcal": 285,
+        "protein": 0,
+        "fat": 0,
+        "carbs": 75
+      }
+    ],
+    "totals": {
+      "kcal": 285,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 75
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:36",
+    "items": [
+      {
+        "food": "ei",
+        "qty": 2,
+        "kcal": 156,
+        "protein": 12,
+        "fat": 10,
+        "carbs": 0
+      }
+    ],
+    "totals": {
+      "kcal": 156,
+      "protein": 12,
+      "fat": 10,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:53",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:16:59",
+    "items": [],
+    "totals": {
+      "kcal": 0,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:30:36",
+    "items": [
+      {
+        "food": "eier",
+        "qty": 2,
+        "kcal": 156,
+        "protein": 12,
+        "fat": 10,
+        "carbs": 0
+      }
+    ],
+    "totals": {
+      "kcal": 156,
+      "protein": 12,
+      "fat": 10,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:30:39",
+    "items": [
+      {
+        "food": "ei",
+        "qty": 3,
+        "kcal": 234,
+        "protein": 18,
+        "fat": 15,
+        "carbs": 0
+      }
+    ],
+    "totals": {
+      "kcal": 234,
+      "protein": 18,
+      "fat": 15,
+      "carbs": 0
+    }
+  },
+  {
+    "time": "2025-11-26T11:30:49",
+    "items": [
+      {
+        "food": "apfel",
+        "qty": 2,
+        "kcal": 190,
+        "protein": 0,
+        "fat": 0,
+        "carbs": 50
+      }
+    ],
+    "totals": {
+      "kcal": 190,
+      "protein": 0,
+      "fat": 0,
+      "carbs": 50
+    }
+  }
+]

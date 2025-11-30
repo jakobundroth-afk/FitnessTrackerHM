@@ -1,0 +1,1 @@
+# Byte- und Umgebungsdateien\n*.pyc\n__pycache__/\n.env\n.venv/\nuser.json\nmeals.json\ntraining.json\n
