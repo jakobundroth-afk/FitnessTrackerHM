@@ -1,6 +1,11 @@
-# Einfaches Fitness CLI Tool
+<<<<<<< HEAD
+# Einfaches Fitness CLI & Web UI
 
-Dieses Projekt ist eine sehr einfache Python-Kommandozeilen-App zum Tracken von:
+Dieses Projekt ist eine sehr einfache Python-App mit:
+- CLI-Menü in `app.py`
+- Flask Web-UI in `web.py` (Templates unter `templates/`)
+
+Trackt:
 - Benutzerprofil & Kalorienziel
 - Mahlzeiten (Kalorien & Makros)
 - Tägliches Dashboard
@@ -11,14 +16,18 @@ Alle Daten werden lokal in JSON-Dateien gespeichert:
 - `meals.json`
 - `training.json`
 
-## Start
+## Start (CLI)
 Python 3.10+ empfohlen.
 
 ```bash
 python app.py
 ```
 
-Beim ersten Start wirst du nach deinen Daten gefragt.
+## Start (Web-UI)
+```bash
+python web.py
+```
+Dann im Browser `http://127.0.0.1:5010` öffnen.
 
 ## Funktionen kurz
 1. Profil: Berechnet Grundumsatz (Mifflin St. Jeor) und Tagesbedarf (Aktivität & Ziel).
@@ -36,3 +45,6 @@ Beim ersten Start wirst du nach deinen Daten gefragt.
 
 ## Lizenz
 Frei verwendbar zu Lernzwecken.
+=======
+# FitnessTrackerHM
+>>>>>>> dbe52fefa8453d9fc091a33c2eaf7182e89b0d4d
