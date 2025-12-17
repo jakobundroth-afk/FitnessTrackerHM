@@ -1,3 +1,5 @@
+"""Einfache Tkinter-App zum Trainings- und Kalorientracking mit CSV/JSON-Dateien."""
+
 # -*- coding: utf-8 -*-
 from typing import List, Dict
 from pathlib import Path
@@ -17,55 +19,29 @@ aktuelles_profil = STANDARD_PROFIL
 
 
 def _bereinige_profilname(name: str) -> str:
+    """Lässt nur einfache Zeichen zu und fällt auf STANDARD_PROFIL zurück."""
     erlaubte = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-"
     cleaned = "".join(ch for ch in name if ch in erlaubte).strip()
     return cleaned or STANDARD_PROFIL
 
 
 def _profil_datei(profil: str) -> Path:
+    """Pfad zur CSV des Profils."""
     return DATEN_ORDNER / f"{profil}.csv"
 
 
 def _profil_info_datei(profil: str) -> Path:
+    """Pfad zur Profil-Info (JSON)."""
     return DATEN_ORDNER / f"{profil}.json"
 
 
 def _kcal_datei(profil: str) -> Path:
+    """Pfad zur Kalorien-Tageswerte-Datei (JSON-Map)."""
     return DATEN_ORDNER / f"{profil}_kcal.json"
 
 
 def _init_datenspeicher() -> None:
-    # Nur Verzeichnis sicherstellen; kein Auto-Profil anlegen
-    DATEN_ORDNER.mkdir(parents=True, exist_ok=True)
-
-# -*- coding: utf-8 -*-
-from typing import List, Dict
-from pathlib import Path
-import csv
-import os
-import subprocess
-import sys
-import tkinter as tk
-from tkinter import ttk, messagebox
-
-# CSV-Konfiguration (Excel-kompatibel) und Profile
-HEADERS = ["date", "exercise", "weight", "reps", "sets"]
-DATEN_ORDNER = Path(__file__).with_name("logbuch_profile")
-STANDARD_PROFIL = "Standard"
-aktuelles_profil = STANDARD_PROFIL
-
-
-def _bereinige_profilname(name: str) -> str:
-    erlaubte = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-"
-    cleaned = "".join(ch for ch in name if ch in erlaubte).strip()
-    return cleaned or STANDARD_PROFIL
-
-
-def _profil_datei(profil: str) -> Path:
-    return DATEN_ORDNER / f"{profil}.csv"
-
-
-def _init_datenspeicher() -> None:
+    """Stellt den Datenordner sicher und legt bei Bedarf ein Standard-Profil an."""
     DATEN_ORDNER.mkdir(parents=True, exist_ok=True)
     # Falls keine Profile existieren, Standard anlegen
     if not any(DATEN_ORDNER.glob("*.csv")):
@@ -73,6 +49,8 @@ def _init_datenspeicher() -> None:
         with datei.open("w", newline="", encoding="utf-8-sig") as f:
             writer = csv.DictWriter(f, fieldnames=HEADERS)
             writer.writeheader()
+
+"""--- Ende Duplikatbereich: Imports/Konstanten/Helfer mehrfach vorhanden gewesen ---"""
 
 
 def profil_liste() -> List[str]:
@@ -163,94 +141,7 @@ def lade_log(profil: str | None = None) -> List[Dict]:
         return []
 
 
-def _fortschritt_lv(uebung: str | None = None) -> dict:
-    """Berechnet Leistungswert je Training und vergleicht mit Ø der letzten 3 Trainings.
-
-    Leistungswert pro Eintrag: gewicht * wiederholungen.
-    Trainings-Tag: Zusammenfassung aller Einträge gleichen Datums.
-    """
-    eintraege = lade_log(aktuelles_profil)
-    if not eintraege:
-        return {"hinweis": "Keine Einträge vorhanden."}
-
-    # Gruppiere nach Datum und summiere Leistungswert pro Trainingstag
-    trainings_map = {}
-    for e in eintraege:
-        # Optional nach Übungsname filtern
-        if uebung:
-            ex = str(e.get("exercise", "") or "").strip().lower()
-            if ex != uebung.strip().lower():
-                continue
-        try:
-            gewicht = float(e.get("weight", 0) or 0)
-            reps = int(e.get("reps", 0) or 0)
-        except Exception:
-            gewicht = 0.0
-            reps = 0
-        lv = gewicht * reps
-        # Datum säubern
-        datum = str(e.get("date") or "").strip()
-        trainings_map.setdefault(datum, 0.0)
-        trainings_map[datum] += lv
-
-    # Sortiere Trainings nach Datum (neueste zuerst)
-    # Datum normalisieren und sortieren (unterstützt mehrere Formate)
-    from datetime import datetime as _dt, date as _date
-    def _normalize_date_str(d: str) -> str:
-        s = (d or "").strip()
-        if not s:
-            return ""
-        # Versuche verschiedene Formate
-        for fmt in ("%Y-%m-%d", "%d.%m.%Y", "%Y/%m/%d"):
-            try:
-                return _dt.strptime(s, fmt).date().isoformat()
-            except Exception:
-                pass
-        # Falls String länger ist (z.B. mit Zeit), versuche ersten 10 Zeichen als ISO
-        if len(s) >= 10:
-            maybe = s[:10]
-            try:
-                return _dt.strptime(maybe, "%Y-%m-%d").date().isoformat()
-            except Exception:
-                pass
-        return s  # Fallback
-
-    # Map neu mit normalisierten Datumsschlüsseln
-    trainings_map = { _normalize_date_str(d): v for d, v in trainings_map.items() if _normalize_date_str(d) }
-
-    def _key(item):
-        d, _ = item
-        try:
-            return _dt.strptime(d, "%Y-%m-%d").date()
-        except Exception:
-            return d
-    trainings = sorted(
-        [(d, v) for d, v in trainings_map.items()],
-        key=_key,
-        reverse=True,
-    )
-
-    if not trainings:
-        return {"hinweis": "Keine Trainings vorhanden."}
-
-    aktuelles_training = trainings[0]
-    # Nur das direkt vorherige Training (vereinfachter Vergleich)
-    vorherige = trainings[1:2]
-    if vorherige:
-        avg_vor = sum(v for _, v in vorherige) / len(vorherige)
-    else:
-        avg_vor = 0.0
-
-    delta = aktuelles_training[1] - avg_vor
-
-    return {
-        "aktuelles_datum": aktuelles_training[0],
-        "aktueller_lv": aktuelles_training[1],
-        "vorheriges_datum": vorherige[0][0] if vorherige else "",
-        "avg_vor3": avg_vor,
-        "delta": delta,
-        "anzahl_vergleich": len(vorherige),
-    }
+"""--- Entfernt: ältere, aggregierende _fortschritt_lv-Variante (Duplikat) ---"""
 
 def schreibe_eintrag_csv(entry: Dict, profil: str | None = None) -> None:
     _init_datenspeicher()
@@ -377,7 +268,7 @@ def add_kcal_heute(kcal: int, profil: str | None = None) -> None:
     speichere_kcal_map(d, profil)
 
 def _fortschritt_lv(uebung: str | None = None) -> dict:
-    """Vergleicht den neuesten Eintrag mit dem vorherigen Eintrag (einfach).
+    """Vergleicht den neuesten Eintrag mit dem vorherigen (einfaches Modell).
 
     Leistungswert pro Eintrag: gewicht * wiederholungen.
     Optional: Nur Einträge einer bestimmten Übung berücksichtigen.
@@ -418,23 +309,6 @@ def _fortschritt_lv(uebung: str | None = None) -> dict:
         "avg_vor3": vorheriger_lv,  # Für Anzeige nutzen wir den direkten vorherigen Wert
         "delta": delta,
         "anzahl_vergleich": 1,
-    }
-    aktivitaet = str(info.get("aktivitaet", "Sitzend"))
-    ziel = str(info.get("ziel", "Gewicht halten"))
-
-    if geschlecht.startswith("w"):
-        bmr = 10 * gewicht_kg + 6.25 * groesse_cm - 5 * alter - 161
-    else:
-        bmr = 10 * gewicht_kg + 6.25 * groesse_cm - 5 * alter + 5
-    faktor = _aktivitaetsfaktor(aktivitaet)
-    tdee = bmr * faktor
-    delta = _ziel_delta_kcal(ziel)
-    ziel_kcal = tdee + delta
-    return {
-        "bmr": round(bmr),
-        "tdee": round(tdee),
-        "ziel_kcal": round(ziel_kcal),
-        "ziel_delta": delta,
     }
 
 
